@@ -1,0 +1,285 @@
+---
+- hosts: localhost
+  #gather_facts: true
+  become: true
+  
+  tasks:
+
+    - name: Reunindo e mostrando 'facts' do sistema
+      ansible.builtin.debug:
+        var: ansible_facts
+
+    - name: Identificando o sistema operacional
+      ansible.builtin.debug:
+        msg: O sistema em uso é o {{ansible_facts['os_family']}}
+
+
+
+    - name: Atualizando o repositório para {{ansible_facts['os_family']}}
+      ansible.builtin.command: apt update
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Atualizando o repositório para {{ansible_facts['os_family']}}
+      ansible.builtin.command: dnf update
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Atualizando o repositório para {{ansible_facts['os_family']}}
+      ansible.builtin.command: zypper up
+      when: ansible_facts['os_family'] == "Suse"
+
+
+   
+    - name: Fazendo o upgrade do repositório para {{ansible_facts['os_family']}}
+      ansible.builtin.command: apt upgrade -y
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Fazendo o upgrade do repositório para {{ansible_facts['os_family']}}
+      ansible.builtin.command: dnf upgrade
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Fazendo o upgrade do repositório para {{ansible_facts['os_family']}}
+      ansible.builtin.command: zypper upgrade
+      when: ansible_facts['os_family'] == "Suse"
+
+
+
+    - name: Instalando 'software-properties-common' para {{ansible_facts['os_family']}}
+      ansible.builtin.command: apt install software-properties-common -y
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Instalando 'software-properties-common'
+      ansible.builtin.command: dnf install software-properties-common -y
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Instalando 'software-properties-common'
+      ansible.builtin.command: zypper in software-properties-common -y
+      when: ansible_facts['os_family'] == "Suse"
+
+
+
+    - name: Adicionando repositório ppa-deadsnakes/ppa para {{ansible_facts['os_family']}}
+      ansible.builtin.command: add-apt-repository ppa:deadsnakes/ppa -y
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Adicionando repositório ppa-deadsnakes/ppa para {{ansible_facts['os_family']}}
+      ansible.builtin.command: yum-config-manager --add-repo ppa:deadsnakes/ppa -y
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Adicionando repositório ppa-deadsnakes/ppa para {{ansible_facts['os_family']}}
+      ansible.builtin.command: zypper ar ppa:deadsnakes/ppa -y
+      when: ansible_facts['os_family'] == "Suse"
+
+
+
+    - name: Instalando pacotes python para {{ansible_facts['os_family']}}
+      ignore_errors: true
+      ansible.builtin.apt:
+        pkg:
+          - build-essential 
+          - autoconf 
+          - libtool 
+          - python3-dev 
+          - python2.7-dev 
+          - libldap2-dev 
+          - libsasl2-dev 
+          - tox 
+          - lcov 
+          - valgrind 
+          - libxml2-dev 
+          - libxslt-dev 
+          - python3-lxml 
+          - slapd 
+          - ldap-utils
+          - openvpn 
+          - network-manager-openvpn-gnome
+          - gettext
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Instalando pacotes python (2) para {{ansible_facts['os_family']}}
+      ignore_errors: true
+      ansible.builtin.command: apt install python3.8 -y
+      ansible.builtin.command: apt install python3.8-dev -y
+      ansible.builtin.command: apt install python3.8-venv -y
+
+    - name: Instalando pacotes python para {{ansible_facts['os_family']}}
+      ignore_errors: true
+      ansible.builtin.yum:
+        name:
+          - build-essential 
+          - autoconf 
+          - libtool 
+          - python3-dev 
+          - python2.7-dev 
+          - libldap2-dev 
+          - libsasl2-dev 
+          - tox 
+          - lcov 
+          - valgrind 
+          - libxml2-dev 
+          - libxslt-dev 
+          - python3-lxml 
+          - slapd 
+          - ldap-utils
+          - openvpn 
+          - network-manager-openvpn-gnome
+          - gettext
+        state: present
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Instalando pacotes python (2) para {{ansible_facts['os_family']}}
+      ignore_errors: true
+      ansible.builtin.command: dnf install python3.8 -y
+      ansible.builtin.command: dnf install python3.8-dev -y
+      ansible.builtin.command: dnf install python3.8-venv -y
+      when: ansible_facts['os_family'] == "RedHat"
+
+    #- name: Instalando pacotes python para {{ansible_facts['os_family']}}
+    - zypper:
+        name:
+        - build-essential 
+          - autoconf 
+          - libtool 
+          - python3-dev 
+          - python2.7-dev 
+          - libldap2-dev 
+          - libsasl2-dev 
+          - tox 
+          - lcov 
+          - valgrind 
+          - libxml2-dev 
+          - libxslt-dev 
+          - python3-lxml 
+          - slapd 
+          - ldap-utils
+          - openvpn 
+          - network-manager-openvpn-gnome
+          - gettext
+        state: present
+      when: ansible_facts['os_family'] == "Suse"
+
+    - name: Instalando pacotes python (2) para {{ansible_facts['os_family']}}
+      ignore_errors: true
+      ansible.builtin.command: zypper install python3.8 -y
+      ansible.builtin.command: zypper install python3.8-dev -y
+      ansible.builtin.command: zypperinstall python3.8-venv -y
+      when: ansible_facts['os_family'] == "Suse"
+
+
+
+    - name: Instalando lista de pacotes para {{ansible_facts['os_family']}}
+      ansible.builtin.apt:
+        pkg:
+          - vim
+          - htop
+          - git
+          - wget
+          - snap
+          - gnome-tweaks
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Instalando lista de pacotes para {{ansible_facts['os_family']}}
+      ansible.builtin.yum:
+        name:
+          - vim
+          - htop
+          - git
+          - wget
+          - snap
+          - gnome-tweaks
+        state: present
+      when: ansible_facts['os_family'] == "RedHat"
+
+    #- name: Instalando lista de pacotes para {{ansible_facts['os_family']}}
+    - zypper:
+        name:
+          - vim
+          - htop
+          - git
+          - wget
+          - snap
+          - gnome-tweaks
+        state: present
+      when: ansible_facts['os_family'] == "Suse"
+
+
+    
+    - name: Instalando virtualenv para {{ansible_facts['os_family']}}
+      ignore_errors: true
+      ansible.builtin.command: apt install virtualenv -y
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Instalando virtualenv para {{ansible_facts['os_family']}}
+      ignore_errors: true
+      ansible.builtin.command: dnf install virtualenv -y
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Instalando virtualenv para {{ansible_facts['os_family']}}
+      ignore_errors: true
+      ansible.builtin.command: zypper install virtualenv -y
+      when: ansible_facts['os_family'] == "Suse"
+
+
+
+    - name: Adicionando repositório ppa-ubuntugis/ppa para {{ansible_facts['os_family']}}
+      ansible.builtin.command: apt add-repository ppa:ubuntugis/ppa
+      ansible.builtin.command: apt-get update
+      when: ansible_facts['os_family'] == "Debian"
+
+    # - name: Adicionando repositório ppa-ubuntugis/ppa para {{ansible_facts['os_family']}}
+    #   ansible.builtin.command: dnf copr enable ubuntugis/ppa
+    #   ansible.builtin.command: dnf update
+    #   when: ansible_facts['os_family'] == "RedHat"
+
+    # - name: Adicionando repositório ppa-ubuntugis/ppa para {{ansible_facts['os_family']}}
+    #   ansible.builtin.command: zypper ar ubuntugis/ppa
+    #   ansible.builtin.command: zypper update
+    #   when: ansible_facts['os_family'] == "Suse"
+
+
+
+    - name: Adicionando PostgreSQL para {{ansible_facts['os_family']}}
+      ignore_errors: true
+      ansible.builtin.command: apt -y install postgresql
+      ansible.builtin.command: apt -y install gdal-bin gdal-data libgdal-dev 
+      ansible.builtin.command: apt -y install postgresql-14-postgis-3 
+      ansible.builtin.command: apt -y install pgadmin4
+      when: ansible_facts['os_family'] == "Debian"
+    
+    - name: Adicionando PostgreSQL para {{ansible_facts['os_family']}}
+      ignore_errors: true
+      ansible.builtin.command: dnf -y install postgresql
+      ansible.builtin.command: dnf -y install gdal-bin gdal-data libgdal-dev 
+      ansible.builtin.command: dnf -y install postgresql-14-postgis-3 
+      ansible.builtin.command: dnf -y install pgadmin4 
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Adicionando PostgreSQL para {{ansible_facts['os_family']}}
+      ignore_errors: true
+      ansible.builtin.command: zypper -y install postgresql
+      ansible.builtin.command: zypper -y install gdal-bin gdal-data libgdal-dev 
+      ansible.builtin.command: zypper -y install postgresql-14-postgis-3 
+      ansible.builtin.command: zypper -y install pgadmin4 
+      when: ansible_facts['os_family'] == "Suse"
+
+
+
+    - name: Adicionando dependências pyhton para {{ansible_facts['os_family']}}
+      ansible.builtin.command: apt install -y python3.8-dev 
+      ansible.builtin.command: apt install python3-gdal -y
+      ansible.builtin.command: apt install python3-pip -y
+      ansible.builtin.command: apt install python3-ldap -y
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Adicionando dependências pyhton para {{ansible_facts['os_family']}}
+      ansible.builtin.command: dnf install -y python3.8-dev 
+      ansible.builtin.command: dnf install python3-gdal -y
+      ansible.builtin.command: dnf install python3-pip -y
+      ansible.builtin.command: dnf install python3-ldap -y
+      when: ansible_facts['os_family'] == "Red Hat"
+
+    - name: Adicionando dependências pyhton para {{ansible_facts['os_family']}}
+      ansible.builtin.command: zypper install -y python3.8-dev 
+      ansible.builtin.command: zypper install python3-gdal -y
+      ansible.builtin.command: zypper install python3-pip -y
+      ansible.builtin.command: zypper install python3-ldap -y
+      when: ansible_facts['os_family'] == "Suse"
